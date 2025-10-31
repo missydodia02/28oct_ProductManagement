@@ -1,0 +1,66 @@
+// prisma/schema.prisma
+//
+// This file defines all your database models (tables) and their relationships.
+// Prisma will read this file and automatically create equivalent SQL tables
+// when we run "prisma migrate".
+//
+// Java comparison:
+// - Similar to defining @Entity classes in Hibernate (like Product.java, Company.java, etc.)
+// - The "relation" keyword works like @OneToMany or @ManyToOne annotations.
+
+generator client {
+  provider = "prisma-client-py"  // This tells Prisma to generate Python client
+}
+
+datasource db {
+  provider = "postgresql"        // Using PostgreSQL database
+  url      = env("DATABASE_URL") // Connection string stored in .env file
+}
+
+// ---------------------
+// Table: Company
+// ---------------------
+model Company {
+  id       Int       @id @default(autoincrement())   // Primary key
+  name     String                                     // Company name
+  location String?                                    // Optional field (nullable)
+  
+  // Relation with Product
+  products Product[]                                 // One-to-many: One company -> Many products
+}
+
+// ---------------------
+// Table: Category
+// ---------------------
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String
+
+  // Relation with Product
+  products Product[]
+}
+
+// ---------------------
+// Table: Product
+// ---------------------
+model Product {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  price       Float
+  stock       Int
+
+  // Foreign keys
+  company_id  Int
+  category_id Int
+
+  // Relations
+  company     Company  @relation(fields: [company_id], references: [id])  // Many-to-one
+  category    Category @relation(fields: [category_id], references: [id]) // Many-to-one
+
+  // Extra indexes (optional for search)
+  @@index([name])
+  @@index([price])
+  @@index([category_id])
+}
+

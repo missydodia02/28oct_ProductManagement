@@ -1,0 +1,21 @@
+// prisma/schema.prisma
+// This file defines the database models for Prisma.
+
+generator client {
+  provider = "prisma-client-py"   // generate Python Prisma client
+  interface = "asyncio"           // async client (works well with FastAPI)
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")  // reads DATABASE_URL from .env
+}
+
+// Product table model
+model Product {
+  id       Int     @id @default(autoincrement())
+  name     String
+  price    Float
+  quantity Int
+  category String
+}
